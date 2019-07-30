@@ -197,51 +197,8 @@ email = 'gloxongp@gmail.com'
 
 
 class TransactionTest(APITestCase):
-    #
-    # def test_can_deposit_money_into_savings_account(self):
-    #     # First let's create a borrower account, hoping the email does not already exist at loandisk.
-    #     import random
-    #
-    #     url = reverse('api:auth:signup')
-    #
-    #     data = {
-    #         "borrower_firstname": "Anym", "borrower_lastname": "Simon Tah", "borrower_email": email,
-    #         "borrower_mobile": "675397307", "borrower_country": "CM", "branch_id": branch_id,
-    #     }
-    #     signup_res = self.client.post(url, data, format='json')
-    #
-    #     # Create a Savings Account for the user.
-    #     savings_account_data = {
-    #         "savings_product_id": 1616, "borrower_id": signup_res.json().get('results').get('borrower_id'),
-    #         "savings_account_number": random.randint(1500000, 2000000)
-    #     }
-    #
-    #     loandisk = LoandiskBase(branch_id)
-    #     endpoint = '/saving'
-    #     savings_account_res = loandisk.post(endpoint, savings_account_data)
-    #     savings_id = savings_account_res.get('response').get('savings_id')
-    #
-    #     url = reverse("api:transaction:deposit")
-    #     savings_data = {
-    #         "payment_method": "CM_MTNMOBILEMONEY", "transaction_amount": random.randint(5000, 150000),
-    #         "borrower_mobile": random.randint(670000000, 679999999), "transaction_description": "Test Deposit",
-    #         "borrower_id": signup_res.json().get('results').get('borrower_id'), "branch_id": branch_id,
-    #         "savings_id": savings_id
-    #     }
-    #
-    #     savings_response = self.client.post(url, savings_data)
-    #     print(savings_response.json())
-    #
-    #     # Delete the borrower account from loandisk to avoid errors in other tests.
-    #     loandisk = LoandiskBorrower(branch_id)
-    #     response = loandisk.delete_borrower(signup_res.json().get('results').get('borrower_id'))
-    #     self.assertEqual(response.get('response'), 'deleted')
-    #
-    #     # Delete the borrower account from the server to avoid errors in other tests.
-    #     borrower = Borrower.objects.get(borrower_id=signup_res.json().get('results').get('borrower_id'))
-    #     borrower.delete()
 
-    def test_can_initiate_a_withdrawal_from_savings_account_with_sufficient_funds(self):
+    def test_can_deposit_money_into_savings_account(self):
         # First let's create a borrower account, hoping the email does not already exist at loandisk.
         import random
 
@@ -253,6 +210,7 @@ class TransactionTest(APITestCase):
         }
         signup_res = self.client.post(url, data, format='json')
 
+        """ Authenticate the request """
         borrower = Borrower.objects.get(email=email, branch_id=branch_id)
         url = reverse('api:auth:password_reset_confirm')
         data = {
@@ -269,6 +227,7 @@ class TransactionTest(APITestCase):
         response = self.client.post(url, data, format='json')
         token = response.json().get('results').get('token')
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + token)
+        """ Authentication Ended """
 
         # Create a Savings Account for the user.
         savings_account_data = {
@@ -281,25 +240,17 @@ class TransactionTest(APITestCase):
         savings_account_res = loandisk.post(endpoint, savings_account_data)
         savings_id = savings_account_res.get('response').get('savings_id')
 
-        # Deposit some money in the person's account.
+        url = reverse("api:transaction:deposit")
         savings_data = {
-             "transaction_amount": 150000, "transaction_description": "Test Deposit",
-             "savings_id": savings_id
-        }
-
-        loandisk = LoandiskSavingTransaction(branch_id)
-        savings_response = loandisk.deposit(savings_data)
-
-        url = reverse("api:transaction:withdraw")
-        withdrawal_data = {
-            "payment_method": "CM_MTNMOBILEMONEY", "transaction_amount": 10,
-            "borrower_mobile": 237675397307, "transaction_description": "Test Deposit",
+            "payment_method": "CM_MTNMOBILEMONEY", "transaction_amount": random.randint(5000, 150000),
+            "borrower_mobile": random.randint(670000000, 679999999), "transaction_description": "Test Deposit",
             "borrower_id": signup_res.json().get('results').get('borrower_id'), "branch_id": branch_id,
             "savings_id": savings_id
         }
 
-        withdrawal_response = self.client.post(url, withdrawal_data)
-        self.assertEqual(withdrawal_response.json().get('success'), True)
+        savings_response = self.client.post(url, savings_data)
+        # print(savings_response.json())
+        self.assertEqual(savings_response.json().get('success'), True)
 
         # Delete the borrower account from loandisk to avoid errors in other tests.
         loandisk = LoandiskBorrower(branch_id)
@@ -309,6 +260,77 @@ class TransactionTest(APITestCase):
         # Delete the borrower account from the server to avoid errors in other tests.
         borrower = Borrower.objects.get(borrower_id=signup_res.json().get('results').get('borrower_id'))
         borrower.delete()
+
+    # def test_can_initiate_a_withdrawal_from_savings_account_with_sufficient_funds(self):
+    #     # First let's create a borrower account, hoping the email does not already exist at loandisk.
+    #     import random
+    #
+    #     url = reverse('api:auth:signup')
+    #
+    #     data = {
+    #         "borrower_firstname": "Anym", "borrower_lastname": "Simon Tah", "borrower_email": email,
+    #         "borrower_mobile": "675397307", "borrower_country": "CM", "branch_id": branch_id,
+    #     }
+    #     signup_res = self.client.post(url, data, format='json')
+    #
+    #     """ Authenticate the request """
+    #     borrower = Borrower.objects.get(email=email, branch_id=branch_id)
+    #     url = reverse('api:auth:password_reset_confirm')
+    #     data = {
+    #         'borrower_id': borrower.borrower_id, 'code': borrower.code, 'branch_id': branch_id, 'new_password': 12345678
+    #     }
+    #     res = self.client.post(url, data, format='json')
+    #
+    #     self.assertEqual(res.status_code, status.HTTP_200_OK)
+    #     self.assertEqual(res.json()['success'], True)
+    #
+    #     # Login the user.
+    #     data = {"branch_id": branch_id, "username": email, "password": 12345678}
+    #     url = reverse("api:auth:login")
+    #     response = self.client.post(url, data, format='json')
+    #     token = response.json().get('results').get('token')
+    #     self.client.credentials(HTTP_AUTHORIZATION='Token ' + token)
+    #     """ Authentication Ended """
+    #
+    #     # Create a Savings Account for the user.
+    #     savings_account_data = {
+    #         "savings_product_id": 1616, "borrower_id": signup_res.json().get('results').get('borrower_id'),
+    #         "savings_account_number": random.randint(1500000, 2000000)
+    #     }
+    #
+    #     loandisk = LoandiskBase(branch_id)
+    #     endpoint = '/saving'
+    #     savings_account_res = loandisk.post(endpoint, savings_account_data)
+    #     savings_id = savings_account_res.get('response').get('savings_id')
+    #
+    #     # Deposit some money in the person's account.
+    #     savings_data = {
+    #          "transaction_amount": 150000, "transaction_description": "Test Deposit",
+    #          "savings_id": savings_id
+    #     }
+    #
+    #     loandisk = LoandiskSavingTransaction(branch_id)
+    #     savings_response = loandisk.deposit(savings_data)
+    #
+    #     url = reverse("api:transaction:withdraw")
+    #     withdrawal_data = {
+    #         "payment_method": "CM_MTNMOBILEMONEY", "transaction_amount": 10,
+    #         "borrower_mobile": 237675397307, "transaction_description": "Test Deposit",
+    #         "borrower_id": signup_res.json().get('results').get('borrower_id'), "branch_id": branch_id,
+    #         "savings_id": savings_id
+    #     }
+    #
+    #     withdrawal_response = self.client.post(url, withdrawal_data)
+    #     self.assertEqual(withdrawal_response.json().get('success'), True)
+    #
+    #     # Delete the borrower account from loandisk to avoid errors in other tests.
+    #     loandisk = LoandiskBorrower(branch_id)
+    #     response = loandisk.delete_borrower(signup_res.json().get('results').get('borrower_id'))
+    #     self.assertEqual(response.get('response'), 'deleted')
+    #
+    #     # Delete the borrower account from the server to avoid errors in other tests.
+    #     borrower = Borrower.objects.get(borrower_id=signup_res.json().get('results').get('borrower_id'))
+    #     borrower.delete()
 
     # def test_cannot_initiate_a_withdrawal_from_savings_account_with_insufficient_funds(self):
     #     # First let's create a borrower account, hoping the email does not already exist at loandisk.

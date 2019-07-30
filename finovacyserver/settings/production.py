@@ -1,13 +1,13 @@
 from .base import *
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '!81)#w$+jpkle+buznfsg@#-$n(b%1=1h$5m^w70wtb@pn@rm4'
 
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['finovacy.billstack.net']
 
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases

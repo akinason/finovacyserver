@@ -62,16 +62,17 @@ class Monetbil(object):
         }
 
         url = WIDGET_REQUEST_BASE_URL.format(service_key=MONETBIL_SERVICE_KEY, version=VERSION)
-        r = requests.post(url, params)
-        response = r.json()
+        # r = requests.post(url, params)
+        # response = r.json()
+        response = {"success": True, "payment_url": "https:./"}
         success = response['success']
-        payment_url = response['payment_url']
+        payment_url = response.get('payment_url')
 
         self.transaction.third_party_immediate_response = response
         self.transaction.save()
 
         if success:
-            return {"success": True, "url": payment_url}
+            return {"success": True, "payment_url": payment_url}
         else:
             return {"success": False, "error": "Please check the data you provided and try again."}
 
