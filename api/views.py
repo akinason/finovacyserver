@@ -145,7 +145,6 @@ class LoginView(APIView):
 
 
 class DepositView(APIView):
-    permission_classes = (IsAuthenticated, )
 
     def post(self, request, format=None):
 

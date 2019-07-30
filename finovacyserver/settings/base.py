@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
-
+import environment
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 from finovacyserver import BASE_DIR
 
@@ -117,7 +117,7 @@ USE_TZ = True
 
 # Disable appending slash at the end of the url
 
-BASE_URL = 'http://finovacy.billstack.net/'
+BASE_URL = environment.BASE_URL
 
 APPEND_SLASH = False
 
