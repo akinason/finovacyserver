@@ -17,6 +17,14 @@ class TransactionManager(object):
             "transaction_description": self.transaction.transaction_description
         }
         res = loandisk.deposit(data=data)
+        if 'Error' not in res:
+            self.transaction.server_transaction_status = transaction_status.completed()
+            self.transaction.is_completed = True
+            self.transaction.save()
+        else:
+            self.transaction.server_transaction_status = transaction_status.pending_retry()
+            self.transaction.save()
+        return res
 
     def _withdraw(self):
         pass
@@ -26,7 +34,14 @@ class TransactionManager(object):
             "loan_id": self.transaction.loan_id, "repayment_amount": self.transaction.repayment_amount
         }
         loandisk = LoanTransaction(branch_id=self.transaction.branch_id)
-        loandisk.repay_loan(data=data)
+        res = loandisk.repay_loan(data=data)
+        if 'Error' not in res:
+            self.transaction.server_transaction_status = transaction_status.completed()
+            self.transaction.is_completed = True
+            self.transaction.save()
+        else:
+            self.transaction.server_transaction_status = transaction_status.pending_retry()
+            self.transaction.save()
 
     def _reverse_deposit(self):
         """A deposit meant to reverse a previous withdrawal on a client's account. """
@@ -53,6 +68,7 @@ class TransactionManager(object):
 
         if self.transaction.server_transaction_type == transaction_type.withdrawal():
             """We do no need to call self._withdraw() because the withdrawal at loandisk has already been done."""
+            self.transaction.server_transaction_status = transaction_status.completed()
             self.transaction.is_completed = True
             self.transaction.save()
             return {"success": True, "message": "Transaction Successful."}

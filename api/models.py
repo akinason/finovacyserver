@@ -153,7 +153,7 @@ class Transaction(models.Model):
     third_party_reference = models.CharField(blank=True, max_length=255)
     third_party_immediate_response = models.TextField(blank=True)
     third_party_callback_response = models.TextField(blank=True)
-    return_url = models.CharField(max_length=255, blank=True, null=True)
+    return_url = models.CharField(max_length=255, blank=True)
     server_transaction_type = models.CharField(blank=True, max_length=50)
     created_on = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     submitted_on = models.DateTimeField(auto_now_add=True)

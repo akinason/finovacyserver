@@ -11,10 +11,11 @@ class TransactionSerializer(serializers.ModelSerializer):
     transaction_description = serializers.CharField(required=False, max_length=255)
     borrower_mobile = serializers.CharField(max_length=25)
     transaction_email = serializers.EmailField(max_length=50, required=False)
+    return_url = serializers.CharField(max_length=255, required=False)
 
     class Meta:
         model = Transaction
         fields = (
             'savings_id', 'transaction_amount', 'payment_method', 'transaction_description', 'borrower_mobile',
-            'borrower_id', 'branch_id', 'transaction_email'
+            'borrower_id', 'branch_id', 'transaction_email', 'return_url'
         )

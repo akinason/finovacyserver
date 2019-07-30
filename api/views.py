@@ -258,7 +258,7 @@ class LoanRepaymentView(APIView):
         return Response(response, status=status.HTTP_206_PARTIAL_CONTENT)
     
 
-class PaymentCallbackView(generic.View):
+class PaymentCallbackView(APIView):
     # This view handles payment transactions callbacks emitted by payment processing companies.
 
     def post(self, request, *args, **kwargs):
@@ -267,7 +267,7 @@ class PaymentCallbackView(generic.View):
         if payment_method == 'monetbil':
             monetbil = Monetbil()
             monetbil.process_client_payment_request_callback(request)
-            return {"received": True}
+            return Response({"received": True}, status=status.HTTP_200_OK, content_type='application/json')
 
     def get(self, request, *args, **kwargs):
         pass

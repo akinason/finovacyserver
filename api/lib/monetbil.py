@@ -91,7 +91,7 @@ class Monetbil(object):
                 return False
             transaction_status = TransactionStatus()
 
-            if str(status) == '1':
+            if str(status) == 'success':
                 if self.transaction.server_transaction_status == transaction_status.submitted():
                     self.transaction.third_party_callback_response = data
                     self.transaction.third_party_reference = transaction_id

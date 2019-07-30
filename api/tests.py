@@ -245,12 +245,23 @@ class TransactionTest(APITestCase):
             "payment_method": "CM_MTNMOBILEMONEY", "transaction_amount": random.randint(5000, 150000),
             "borrower_mobile": random.randint(670000000, 679999999), "transaction_description": "Test Deposit",
             "borrower_id": signup_res.json().get('results').get('borrower_id'), "branch_id": branch_id,
-            "savings_id": savings_id
+            "savings_id": savings_id,
         }
 
         savings_response = self.client.post(url, savings_data)
-        # print(savings_response.json())
         self.assertEqual(savings_response.json().get('success'), True)
+
+        """Fetch the transaction, prepare a callback and fire it. """
+        transaction = Transaction.objects.get()
+        callback_data = {
+            "transaction_id": str(transaction.id) + 'TEST', "message": "succesfully processed transaction",
+            "payment_ref": transaction.reference, "status": "success", "amount": transaction.transaction_amount,
+            "currency": transaction.currency, "status_code": 200
+        }
+        url = reverse("api:transaction:payment_callback", kwargs={"payment_method": "monetbil"})
+        callback_res = self.client.post(url, data=callback_data, status=status.HTTP_200_OK)
+
+        # transaction = Transaction.objects.get()
 
         # Delete the borrower account from loandisk to avoid errors in other tests.
         loandisk = LoandiskBorrower(branch_id)
