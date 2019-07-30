@@ -117,7 +117,7 @@ USE_TZ = True
 
 # Disable appending slash at the end of the url
 
-BASE_URL = 'http://localhost:8012/'
+BASE_URL = 'http://finovacy.billstack.net/'
 
 APPEND_SLASH = False
 
