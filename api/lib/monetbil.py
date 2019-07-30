@@ -62,9 +62,8 @@ class Monetbil(object):
         }
 
         url = WIDGET_REQUEST_BASE_URL.format(service_key=MONETBIL_SERVICE_KEY, version=VERSION)
-        # r = requests.post(url, params)
-        # response = r.json()
-        response = {"success": True, "payment_url": "https:./"}
+        r = requests.post(url, params)
+        response = r.json()
         success = response['success']
         payment_url = response.get('payment_url')
 
