@@ -131,7 +131,12 @@ class LoginView(APIView):
             # is_authenticated = True
             if is_authenticated:
                 borrower = borrower_manager.get_borrower(branch_id=branch_id, username=username)
-                token = Token.objects.create(user=borrower)
+                token, created = Token.objects.get_or_create(user=borrower)
+                if not created:
+                    """We need to ensure that we create a new token each time someone logs in."""
+                    Token.objects.get(user=borrower).delete()
+                    token = Token.objects.create(user=borrower)
+
                 result = {"token": token.key, "borrower_id": borrower.borrower_id, "branch_id": branch_id}
                 response = format_api_response(success=True, result=result)
                 return Response(response, status=status.HTTP_200_OK)
