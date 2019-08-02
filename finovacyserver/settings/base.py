@@ -99,6 +99,14 @@ REST_FRAMEWORK = {
     )
 }
 
+# CORS Configurations.
+# https://github.com/ottoyiu/django-cors-headers
+
+CORS_ORIGIN_ALLOW_ALL = True 
+CORS_ALLOW_HEADERS = default_headers + (
+    'api-key',
+)
+
 # Authentication user model
 AUTH_USER_MODEL = 'api.Borrower'
 
