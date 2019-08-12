@@ -6,6 +6,7 @@ urlpatterns = [
     path('auth/', include('api.urls.auth')),
     path('transaction/', include('api.urls.transaction')),
     path('loan/', include('api.urls.loan')),
+    path('loandisk/', include('api.urls.loandisk')),
 ]
 
-urlpatterns = format_suffix_patterns(urlpatterns)
+# urlpatterns = format_suffix_patterns(urlpatterns)

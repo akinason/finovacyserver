@@ -1,8 +1,8 @@
 from django.urls import path
-from api import views
+from api.views import loan as view
 
 app_name = 'loan'
 urlpatterns = [
-    path('repayment/', views.LoanRepaymentView.as_view(), name='loan_repayment'),
+    path('repayment/', view.LoanRepaymentView.as_view(), name='loan_repayment'),
 ]
 
